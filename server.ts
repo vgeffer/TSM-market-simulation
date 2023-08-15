@@ -87,10 +87,10 @@ import MerchantEndpoints from "./api/endpoint/merchant";
     router.get("/merchant/secure/logout",
         async (req, res) => { merchant.logout(req, res); }
     );
-    router.put("/merchant/secure/purchase/:item",
+    router.put("/merchant/secure/purchase/:uid/:item/:target",
         async (req, res) => { merchant.buy(req, res); }
     );
-    router.put("/merchant/secure/income/:amount", 
+    router.put("/merchant/secure/income/:uid/:amount", 
         async (req, res) => { merchant.writeIncome(req, res); }
     );
     router.get("/merchant/secure/user/:uid",
@@ -99,6 +99,11 @@ import MerchantEndpoints from "./api/endpoint/merchant";
     router.get("/merchant/secure/users", 
         async (req, res) => { merchant.getAllUsers(req, res); }
     );
+    router.get("/merchant/secure/tradeables", 
+        async (req, res) => { merchant.getTradables(req, res); }
+    );
+
+
 
     //Setup admin endpoints
 

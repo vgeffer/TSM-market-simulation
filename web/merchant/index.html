@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TSMARKET</title>
+
+        <link rel = "stylesheet" href = "../styles/common.css"/>
+
+        <script type = "text/javascript" src = "../scripts/merchant.js"></script>
+
+        <meta charset = "utf-8">
+        <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+    </head>
+
+    <body>
+        <div id = "content" class = "fullscreen-flex"> <!--for msgbox bluring-->
+            <nav>
+                <div class = "text-center">
+                    <h2>TSMarket</h2>
+                </div>
+            </nav>
+
+            <div class = "content-responsive">
+                <aside id = "user-selector" class = "col-1 stock-select-responsive"></aside>
+
+                <div>
+                    <ul id = "handicap-box"></ul>
+
+                    <h3 id = "cash-owned"></h3>
+
+                    <span>
+                        Cash made: 
+                        <input id = "cash-made" type = "number" value = 0>
+                    </span>
+                    <button id = "pay">Pay</button>
+
+                    <h3>Items</h3>
+                    <ul id = "item-shop"> 
+                    </ul>
+
+                    <select id = "selectableUser"></select>
+                    <p id = "price">Price: 0</p>
+                    <button id = "buy">Buy</button>
+                </div>
+            </div>
+        </div>
+
+        <div id = "fatalerr" class = "msgbox hidden">
+            <div>
+                <div class = "text-center">
+                    <h2>Fatal Error Occured</h2>
+
+                    <h5>A fatal error occured. Server has sent this error message: </h5>
+                    <h4 id = "msg-server"></h4>
+                    <h5>If this error pressists, please report it to a nearest responsible person.</h5>
+                </div>
+                <div class = "content-center">
+                    <button id = "msg-exit"></button>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -51,7 +51,7 @@ export default class MarketSim {
         if (this.tickTimerID === null)
             return; //Market is not running, no need to stop it
 
-        clearInterval(this.tickTimerID);
+        //clearInterval(this.tickTimerID);
         this.tickTimerID = null;
     }
 

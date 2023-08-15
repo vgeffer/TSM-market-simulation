@@ -79,7 +79,6 @@ export default class TradeEndpoints{
         return res.status(200).send(orderid);
     }
 
-
     private async cancelOrder(req: Request, res: Response) {
 
         const uid = await this.users.verifyUser(req.cookies.tradeBiscuit);
@@ -128,14 +127,10 @@ export default class TradeEndpoints{
         }
 
         //Issue payment to cancelling party
-        if (typeof orderingUser.ws !== "undefined") //if there is no websocket we don't care - user is disconnectet and will get the update with connection sync
-            orderingUser.ws.send(JSON.stringify({
-                type: "payment",
-                content: {
-                    stock: stockReturned,
-                    amount: amountReturned
-                }
-            }));
+        this.websock.payment(orderingUser.usid, {
+            stock: stockReturned,
+            amount: amountReturned
+        });
 
         //Anounce order cancelation
         this.websock.broadcastAll({

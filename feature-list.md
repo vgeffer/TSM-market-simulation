@@ -19,9 +19,9 @@
 [-] Merchant
     [-] Shops
     [x] Info messages
-    [ ] Messages
+    [-] Messages
     [x] Merchant accounts
-    [ ] Frontend
+    [-] Frontend
 
 [ ] Admin
     [-] Sim settings
@@ -31,5 +31,5 @@
 
 
 TODAY TODOS: 
-    - rewrite payments
-    - frontend
+    - messages
+    - shop backends

@@ -400,24 +400,15 @@ export default class Market {
         });
 
         //Payment announcements to parties
-        if (typeof sellingUser.ws !== "undefined")
-            sellingUser.ws.send(JSON.stringify({
-                type: "payment",
-                content: {
-                    stock: "cash",
-                    amount: cashPaid
-                }
-            }));
+        this.websock.payment(sellingUser.usid, {
+            stock: "cash",
+            amount: cashPaid
+        });
 
-
-        if (typeof buyingUser.ws !== "undefined")
-            buyingUser.ws.send(JSON.stringify({
-                type: "payment",
-                content: {
-                    stock: stockName,
-                    amount: assetSold
-                }
-            }));
+        this.websock.payment(buyingUser.usid, {
+            stock: stockName,
+            amount: assetSold
+        });
 
         return transaction;
     }

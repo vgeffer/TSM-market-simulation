@@ -110,7 +110,6 @@ export default class WSServer {
             logListener();
     }
 
-
     broadcastAll(message: any) {
 
         const payload = JSON.stringify({
@@ -126,6 +125,25 @@ export default class WSServer {
 
     payment(uid: string, message: any) {
         
+        const user = this.users.getUserByID(uid);
+        if (typeof user === "undefined") 
+            return;
+
+        if (typeof user.ws !== "undefined") 
+            user.ws.send(JSON.stringify({
+                type: "payment",
+                content: message
+            }));
+
+        for (const merchant of this.users.getUserList()) {
+
+            if (merchant.merchant === true && typeof merchant.ws !== "undefined")
+                merchant.ws.send(JSON.stringify({
+                    type: "payment",
+                    content: message,
+                    user: uid
+                })); 
+        }
     }
 
     private wss: ws.Server;

@@ -1,16 +1,55 @@
 import { Request, Response } from "express";
+import { readFileSync } from "fs";
 import { randomBytes } from "crypto";
 import { sign, verify } from "jsonwebtoken";
-import Users, {User} from "../market/users";
+import Users from "../market/users";
 
+export interface tradable {
+    name: string;
+    price: number;
+    handicap: {
+        message: string
+    } | null;
+    bonus: {
+        message: string | null;
+        removeHandicaps: number;
+    } | null;
+};
 
 
 export default class MerchantEndpoints {
     
-    constructor(users: Users, appKey: string) {
+    constructor(users: Users, appKey: string, defaultTradeablePath: string = "./tradeable.json") {
 
         this.appKey = appKey;
         this.users = users;
+
+        try {
+        
+            const tradeablesData = readFileSync(defaultTradeablePath, { encoding: "utf-8" }); 
+            this.tradables = JSON.parse(tradeablesData);
+        } catch (e) {
+
+            this.tradables = [
+            {
+                name: "Handicap Test",
+                price: 20,
+                handicap: {
+                    message: "test"
+                },
+                bonus: null
+            },
+            {
+                name: "Bonus Test",
+                price: 20,
+                handicap: null,
+                bonus: {
+                    message: "test 2",
+                    removeHandicaps: 1
+                }
+            }
+            ];
+        }
     }
 
 
@@ -42,6 +81,14 @@ export default class MerchantEndpoints {
         return res.status(200).send(JSON.stringify(users));
     }
 
+    getTradables(req: Request, res: Response) {
+        const merchant = this.verifyMerchant(req.cookies.travellingSalesman);
+        if (typeof merchant === "undefined")
+            return res.status(401).send("401: unauthorized");
+
+        return res.status(200).send(JSON.stringify(this.tradables));
+    }
+
     async logout(req: Request, res: Response) {
         
         res.cookie("travellingSalesman", "logout", {
@@ -54,7 +101,7 @@ export default class MerchantEndpoints {
 
     async tradeTokens(req: Request, res: Response) {
 
-        const uid = await this.verifyMerchant(req.cookies.tradeBiscuit);
+        const uid = await this.verifyMerchant(req.cookies.travellingSalesman);
 
         if (uid === null) //Null: user is already logged in elsewhere
             return res.status(409).send("409: logged in elsewhere");
@@ -102,6 +149,7 @@ export default class MerchantEndpoints {
     }
 
 
+    private tradables: tradable[];
     private appKey: string;
     private users: Users;
 };
