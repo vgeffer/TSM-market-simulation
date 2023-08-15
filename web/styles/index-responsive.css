@@ -1,0 +1,75 @@
+
+.column-responsive {
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.layout-responsive {
+    height: 90%;
+    
+
+}
+.layout-responsive * {
+    margin-bottom: 0.5rem;
+}
+
+
+.padding-responsive {
+    padding: 2px;
+}
+
+.row-responsive::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.separator-responsive {
+    display: none;
+}
+
+[class*="col-"] {
+    width: 100%;
+    float: left;
+}
+
+
+/*If any smaller, we assume mobile*/
+@media only screen and (min-width: 768px) {
+    
+    .column-responsive {
+        height: 80%;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+    }
+    .column-responsive * {
+        margin-bottom: 0.35rem;
+    }
+
+    .layout-responsive {
+
+    }
+
+    .padding-responsive {
+        padding: 12px;
+    }
+
+    .separator-responsive {
+        height: 2rem;
+        display: block;
+        background-color: gray;
+    }
+
+    [class*="col-"] {
+        height: 12rem;
+    }
+
+    .col-1 { width: 49.95%; }
+    .col-2 { width: 0.1%; }
+    .col-3 { width: 49.95%; }
+}
+

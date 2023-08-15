@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TSMARKET</title>
+
+        <link rel = "stylesheet" href = "styles/common.css"/>
+        <link rel = "stylesheet" href = "styles/index-responsive.css"/>
+
+        <script type = "text/javascript" src = "scripts/userauth.js"></script>
+
+        <meta charset = "utf-8">
+        <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+    </head>
+
+    <body>
+        <div class = "text-center">
+            <h2>TSMarket</h2>
+        </div>
+        <div>
+            <div class = "row-responsive">
+                <div class = "column col-1 padding-responsive">
+                    <div class = "column-responsive">
+                        <span class = "underline-anim"><input id = "login-name" type = "text" placeholder = "Name..."/> </span>
+                        <span class = "underline-anim"><input id = "login-pass" type = "password" placeholder = "Password..."/> </span>
+                    </div>
+                    
+                    <p class = "error hidden" id = "login-error">ASD</p>
+                    <button id = "login">Log In</button>
+                </div>
+    
+                <div class = "col-2 separator-responsive"></div>
+    
+                <div class = "column col-3 padding-responsive">
+                    <div class = "column-responsive">
+                        <span class = "underline-anim"> <input id = "reg-name" type = "text" placeholder = "Name..."/> </span>
+                        <span class = "underline-anim"> <input id = "reg-pass" type = "password" placeholder = "Password..."/> </span>
+                        <span class = "underline-anim"> <input id = "reg-pass-again" type = "password" placeholder = "Password Again..."/> </span>
+                    </div>
+                
+                    <p class = "error hidden" id = "reg-error">ASD</p>
+                    <button id = "reg">Register</button>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+
+<!--TODO: Style Edits, Single device message-->

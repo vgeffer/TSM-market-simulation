@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TSMARKET</title>
+
+        <link rel = "stylesheet" href = "styles/common.css"/>
+        <link rel = "stylesheet" href = "styles/marktet-responsive.css"/>
+
+        <script type = "text/javascript" src = "scripts/lib/plotly-2.25.1.min.js"></script>
+        <script type = "text/javascript" src = "scripts/trading.js"></script>
+
+        <meta charset = "utf-8">
+        <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+    </head>
+
+    <body>
+        <div id = "content" class = "fullscreen-flex"> <!--for msgbox bluring-->
+            <nav>
+                <div class = "text-center">
+                    <h2>TSMarket</h2>
+                </div>
+
+                <div>
+                    <button id = "profile">Profile</button>
+                    <button id = "logout">Log out</button>
+                </div>
+            </nav>
+
+            <div class = "content-responsive">
+                <aside id = "stock-selector" class = "col-1 stock-select-responsive"></aside>
+                
+                <section class = "dashboard-responsive">
+              
+                    <div class = "row">          
+                        <section class = "col-2" id = "graph">
+                        </section>
+
+                        <div class = "col-3">
+
+                        
+                            <div>
+                                <p id = "current-bid"></p>
+                                <p id = "current-ask"></p>
+                            </div>
+
+                            <div>
+                                <h4 id = "cash-owned"></h4>
+                                <h4 id = "stock-owned"></h4>
+                            </div>
+
+                            <div>
+                                <div>
+                                    <span>
+                                        <p>Amount:</p>
+                                        <input id = "buy-amount" type = "number" value = "0" min = "0">
+                                    </span>
+                
+                                    <span>
+                                        <p>Unit Price:</p>
+                                        <input id = "buy-unit" type = "number" value = "0" min = "0">
+                                    </span>
+                                    <p id = "buy-total">Total Price: 0</p>
+            
+                                    <p class = "error hidden" id = "buy-error"></p>
+                                    <button id = "buy-make-offer">Make Buy Offer</button>
+                                </div>
+                
+                                <div>
+
+                                    <span>
+                                        <p>Amount:</p>
+                                        <input id = "sell-amount" type = "number" value = "0" min = "0">
+                                    </span>
+                
+                                    <span>
+                                        <p>Unit Price:</p>
+                                        <input id = "sell-unit" type = "number" value = "0" min = "0">
+                                    </span>
+                                    <p id = "sell-total">Total Price: 0</p>
+            
+                                    <p class = "error hidden" id = "sell-error"></p>
+                                    <button id = "sell-make-offer">Make Sell Offer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class = "row">
+                        <div>
+                            <div id = "buy-orders"></div>
+                            <div id = "sell-orders"></div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+
+        <div id = "fatalerr" class = "msgbox hidden">
+            <div>
+                <div class = "text-center">
+                    <h2>Fatal Error Occured</h2>
+
+                    <h5>A fatal error occured. Server has sent this error message: </h5>
+                    <h4 id = "msg-server"></h4>
+                    <h5>If this error pressists, please report it to a nearest responsible person.</h5>
+                </div>
+                <div class = "content-center">
+                    <button id = "msg-exit"></button>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
