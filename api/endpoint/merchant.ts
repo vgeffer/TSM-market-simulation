@@ -3,26 +3,21 @@ import { readFileSync } from "fs";
 import { randomBytes } from "crypto";
 import { sign, verify } from "jsonwebtoken";
 import Users from "../market/users";
+import WSServer from "../websockets";
 
 export interface tradable {
     name: string;
     price: number;
-    handicap: {
-        message: string
-    } | null;
-    bonus: {
-        message: string | null;
-        removeHandicaps: number;
-    } | null;
 };
 
 
 export default class MerchantEndpoints {
     
-    constructor(users: Users, appKey: string, defaultTradeablePath: string = "./tradeable.json") {
+    constructor(users: Users, websock: WSServer, appKey: string, defaultTradeablePath: string = "./tradeable.json") {
 
         this.appKey = appKey;
         this.users = users;
+        this.websock = websock;
 
         try {
         
@@ -31,44 +26,88 @@ export default class MerchantEndpoints {
         } catch (e) {
 
             this.tradables = [
-            {
-                name: "Handicap Test",
-                price: 20,
-                handicap: {
-                    message: "test"
+                {
+                    name: "Handicap Test",
+                    price: 20
                 },
-                bonus: null
-            },
-            {
-                name: "Bonus Test",
-                price: 20,
-                handicap: null,
-                bonus: {
-                    message: "test 2",
-                    removeHandicaps: 1
+                {
+                    name: "Bonus Test",
+                    price: 20
                 }
-            }
             ];
         }
     }
 
-
     buy(req: Request, res: Response) {
 
+        const uid = this.verifyMerchant(req.cookies.travellingSalesman);
+        
+        if (uid === null) //Null: user is already logged in elsewhere
+            return res.status(409).send("409: logged in elsewhere");
+
+        if (typeof uid === "undefined") //Undefined: User not found
+            return res.status(401).send("401: auth failed");
+
+        if (typeof req.params.uid === "undefined" || typeof req.params.item === "undefined")
+            return res.status(400).send("400: userid, item or target not provided");
+
+        const user = this.users.getUserByID(req.params.uid);
+        if (typeof user === "undefined")
+            return res.status(400).send("400: user not found");
+
+        if (typeof user.portfolio === "undefined")
+            return res.status(400).send("400: user does not have a portfolio");
+        
+
+        const item = this.tradables[Number(req.params.item)];
+        //Check, if trade is possible
+        if (typeof item === "undefined")
+            return res.status(400).send("400: item does not exist");
+
+        if (user.portfolio.cash < item.price)
+            return res.status(400).send(`400: not enough money to buy ${item.name}`);
+        
+        //Purchase
+        user.portfolio.cash -= item.price;
+        this.websock.payment(req.params.uid, {
+            stock: "cash",
+            amount: -item.price
+        });
+
+        user.portfolio.cash -= item.price;
+
+        return res.status(200).send("200: ok");
     }
 
     writeIncome(req: Request, res: Response) {
 
-    }
+        const uid = this.verifyMerchant(req.cookies.travellingSalesman);
 
-    getUser(req: Request, res: Response) {
-        
-        const merchant = this.verifyMerchant(req.cookies.travellingSalesman);
-        if (typeof merchant === "undefined")
-            return res.status(401).send("401: unauthorized");
+        if (uid === null) //Null: user is already logged in elsewhere
+            return res.status(409).send("409: logged in elsewhere");
 
-        const users = this.users.getUserList();
-        return res.status(200).send(JSON.stringify(users));
+        if (typeof uid === "undefined") //Undefined: User not found
+            return res.status(401).send("401: auth failed");
+
+        if (typeof req.params.uid === "undefined" || typeof req.params.amount === "undefined")
+            return res.status(400).send("400: userid or amount not provided");
+
+
+        const user = this.users.getUserByID(req.params.uid);
+        if (typeof user === "undefined")
+            return res.status(400).send("400: user not found");
+
+        if (typeof user.portfolio === "undefined")
+            return res.status(400).send("400: user does not have a portfolio");
+
+        user.portfolio.cash += Number(req.params.amount);
+
+        //DO a payment
+        this.websock.payment(req.params.uid, {
+            stock: "cash",
+            amount: Number(req.params.amount)
+        });
+        return res.status(200).send("200: ok");
     }
 
     getAllUsers(req: Request, res: Response) {
@@ -148,8 +187,8 @@ export default class MerchantEndpoints {
         }
     }
 
-
     private tradables: tradable[];
     private appKey: string;
     private users: Users;
+    private websock: WSServer;
 };

@@ -4,6 +4,7 @@
         <title>TSMARKET</title>
 
         <link rel = "stylesheet" href = "../styles/common.css"/>
+        <link rel = "stylesheet" href = "../styles/merchant-responsive.css"/>
 
         <script type = "text/javascript" src = "../scripts/merchant.js"></script>
 
@@ -22,22 +23,20 @@
             <div class = "content-responsive">
                 <aside id = "user-selector" class = "col-1 stock-select-responsive"></aside>
 
-                <div>
-                    <ul id = "handicap-box"></ul>
+                <div class = "dashboard-responsive">
+                    <h2 id = "username"></h2>
 
                     <h3 id = "cash-owned"></h3>
 
                     <span>
                         Cash made: 
-                        <input id = "cash-made" type = "number" value = 0>
+                        <input id = "cash-made" type = "number" value = "0" min = "0">
                     </span>
                     <button id = "pay">Pay</button>
 
                     <h3>Items</h3>
-                    <ul id = "item-shop"> 
-                    </ul>
+                    <ul id = "item-shop"></ul>
 
-                    <select id = "selectableUser"></select>
                     <p id = "price">Price: 0</p>
                     <button id = "buy">Buy</button>
                 </div>

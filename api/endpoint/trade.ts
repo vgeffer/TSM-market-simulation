@@ -132,12 +132,6 @@ export default class TradeEndpoints{
             amount: amountReturned
         });
 
-        //Anounce order cancelation
-        this.websock.broadcastAll({
-            stock: req.params.stock,
-            cancel: req.params.orderid
-        });
-
         return res.status(200).send("200: ok");
     }
  

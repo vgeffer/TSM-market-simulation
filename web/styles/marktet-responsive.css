@@ -1,4 +1,6 @@
 
+
+
 .row-responsive::after {
     content: "";
     clear: both;
@@ -23,6 +25,13 @@
     margin-right: auto;
     padding: 1em;
 }
+
+.orderinfo-responsive {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    max-height: 20vh;
+}
+
 
 @media only screen and (min-width: 768px) { 
 
@@ -50,9 +59,10 @@
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
+    }
 
-        overflow-y: auto;
-        overflow-x: hidden;
+    .stock-info-responsive {
+        flex-grow: 1;
     }
 
     .row {
@@ -61,4 +71,6 @@
         justify-content: start;
     }
 
+
 }
+

@@ -9,7 +9,6 @@ window.onload = async () => {
     $("sell-make-offer").addEventListener("click", sell);
 
     $("logout").addEventListener("click", () => { window.location = "/secure/logout" });
-    $("profile").addEventListener("click", () => { window.location = "/profile.html" });
 
     $("buy-amount").addEventListener("input", () => { updateTotal("buy") });
     $("buy-unit").addEventListener("input", () => { updateTotal("buy") });
@@ -173,14 +172,17 @@ function processTransaction(stock, transaction) {
         const updateOrderList = (transaction.outputOrder.type === 0 ? stockData.activeBuyOrders : stockData.activeSellOrders);
         const deleteOrderList = (transaction.outputOrder.type !== 0 ? stockData.activeBuyOrders : stockData.activeSellOrders);
 
-        const order = getOrderByID(stock, transaction.outputOrder.ouid);
-        
-        if (typeof order === "undefined")
-            updateOrderList.push(transaction.outputOrder);
-        else
-            buyOrder = transaction.outputOrder;
+        let x = 0;
+        for(;updateOrderList[x].ouid !== transaction.outputOrder.ouid; x++)
+            if (typeof updateOrderList[x] === "undefined") { x = -1; break; } 
 
-        
+
+        if (x === -1) 
+            updateOrderList.push(transaction.outputOrder);
+
+        else 
+            updateOrderList[x] = transaction.outputOrder; 
+
         const deleteOID = (transaction.outputOrder.type !== 0 ? transaction.buyOID : transaction.sellOID);
         for (let x = 0; deleteOrderList.length; x++) {
             if (deleteOrderList[x].ouid === deleteOID) {
@@ -392,8 +394,8 @@ function updateDisplay(stock, delta) {
 
                     const orderParent = document.createElement("span");
 
-                    const orderListing = document.createElement("p");
-                    orderListing.textContent = `Amount: ${order.units}, Unit Price: ${order.totalPrice / order.units}`;       
+                    const orderListing = document.createElement("p"); //TODO: Debug
+                    orderListing.textContent = `Amount: ${order.units}, Unit Price: ${order.totalPrice / order.units}, OrderID: ${order.ouid}`;       
                     orderParent.appendChild(orderListing);
 
                     if (document.userID === order.cuid) {

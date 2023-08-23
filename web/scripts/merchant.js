@@ -4,6 +4,9 @@ $ = (e) => { return document.getElementById(e); }
 //Get ws connection token, connect to ws, get market status
 window.onload = async () => {
     
+    $("buy").addEventListener("click", buy);
+    $("pay").addEventListener("click", income);
+
     //Exchange trade token for ws auth token
     const res = await fetch("/merchant/secure/auth", {
         method: 'POST', 
@@ -27,7 +30,7 @@ window.onload = async () => {
 	});
 
 	socket.addEventListener("message", (e) => {
-		console.log("Message from The Server ", e.data);
+		//console.log("Message from The Server ", e.data);
         try {
             const msgData = JSON.parse(e.data);
             //Do basic format check
@@ -56,12 +59,20 @@ window.onload = async () => {
     populateUsers();
     populateTradeables();
     document.selectedUser = 0;
-    while (typeof document.users[document.selectedUser] !== "undefined" && document.users[document.selectedUser].merchant)
+    while (typeof document.users[document.selectedUser] !== "undefined" && (document.users[document.selectedUser].merchant || document.users[document.selectedUser].bot))
         document.selectedUser++;
     updateDisplay(document.selectedUser); //By default - display first item; null = change everything
 }
 
 function parseSocketMessage(msg) {
+
+    //TODO: debug
+    let sum = 0;
+    for (const user of document.users) {
+        if(user.bot)
+            sum += user.portfolio.cash;
+    }
+    console.log(sum-30000);
 
     switch (msg.type) {
 
@@ -223,6 +234,7 @@ function updateDisplay(user) {
     if (typeof displayedUser.portfolio === undefined)
         return;
     
+    $("username").textContent = displayedUser.name;
     $("cash-owned").textContent = `Cash owned: ${displayedUser.portfolio.cash}`;
     
 
@@ -254,12 +266,11 @@ function populateUsers() {
         return;
 
     const parent = $("user-selector");
-    const selectables = $("selectableUser");
 
 
     for (let x = 0; x < document.users.length; x++) {
 
-        if (document.users[x].merchant)
+        if (document.users[x].merchant || document.users[x].bot)
             continue;
 
         const userSelector = document.createElement("a");
@@ -271,14 +282,8 @@ function populateUsers() {
             updateDisplay(x);
         });
 
-
-        //Save to selectables
-        const selector = document.createElement("option");
-        selector.value = document.users[x].name;
-        selector.textContent = document.users[x].name;
-    
         parent.appendChild(userSelector);
-        selectables.appendChild(selector);
+
     }
 }
 
@@ -293,7 +298,9 @@ function populateTradeables() {
     for (let x = 0; x < document.tradeables.length; x++) { 
     
         const wrapper = document.createElement("li");
-        wrapper.textContent = `${document.tradeables[x].name} [Price: ${document.tradeables[x].price}]`;
+        const label = document.createElement("h4");
+      
+        label.textContent = `${document.tradeables[x].name} [Price: ${document.tradeables[x].price}]`;
         wrapper.id = `wrap-${x}`;
 
         const selector = document.createElement("input");
@@ -304,7 +311,7 @@ function populateTradeables() {
             $("price").textContent = `Price: ${document.tradeables[x].price}`;
         });
 
-        
+        wrapper.appendChild(label);
         wrapper.appendChild(selector);
         parent.appendChild(wrapper);
     }
@@ -318,63 +325,40 @@ function populateTradeables() {
 
 async function buy() {
 
-    const bidPrice = $("buy-amount").value * $("buy-unit").value;
-    if (document.portfolio.cash < bidPrice) {
+    let x = 0;
+    for (; !($(`item-${x}`).checked); x++)
+        if ($(`item-${x}`) === null) { x = -1; break; } //Just itterates until finds first selected
+    
 
-        $("buy-error").classList.remove("hidden");
-        $("buy-error").textContent = "Not enough cash to make the order.";
+    const res = await fetch(`/merchant/secure/purchase/${document.users[document.selectedUser].usid}/${x}/`, {
+        method: 'PUT',
+        credentials: 'same-origin'
+    });
 
-        return; 
-    }
+    if (res.status === 409)
+        return displayFatal(await res.text(), "Logout", () => { window.location = "/merchant/secure/logout"; });//Fatal
+    if (res.status !== 200); //Non-fatal
 
+    $(`item-${x}`).checked = false;
+    return await res.text();
 
-    try {
-        
-        await makeOrder("buy", document.selectedStock, $("buy-amount").value, bidPrice);
-
-    } catch (e) {
-
-        $("buy-error").classList.remove("hidden");
-        $("buy-error").textContent = `Error processing order: ${e.message}`;
-        return;
-    }
-
-    document.portfolio.cash -= bidPrice;
-    updateDisplay(document.selectedStock);
-
-    //Reset order inputs
-    $("buy-amount").value = 0;
-    $("buy-unit").value = 0;
-    updateTotal("buy");
 }
 
-async function sell() {
+async function income() {
 
-    const askPrice = $("sell-amount").value * $("sell-unit").value;
-    if (typeof document.portfolio.assets[document.selectedStock] === "undefined" || document.portfolio.assets[document.selectedStock] < $("sell-amount").value) {
-    
-        $("sell-error").classList.remove("hidden");
-        $("sell-error").textContent = `Not enough ${document.selectedStock} to make the order`;
-        return; 
-    }
+    const income = Number($("cash-made").value);
 
+    const res = await fetch(`/merchant/secure/income/${document.users[document.selectedUser].usid}/${income}/`, {
+        method: 'PUT',
+        credentials: 'same-origin'
+    });
 
-    try {
-        
-        await makeOrder("sell", document.selectedStock, $("sell-amount").value, askPrice);
+    if (res.status === 409)
+    return displayFatal(await res.text(), "Logout", () => { window.location = "/merchant/secure/logout"; });//Fatal
 
-    } catch (e) {
+    if (res.status !== 200); //Non-fatal
 
-        $("sell-error").classList.remove("hidden");
-        $("sell-error").textContent = `Error processing order: ${e.message}`;
-        return;
-    }
+    $("cash-made").value = 0;
+    return await res.text();
 
-    document.portfolio.assets[document.selectedStock] -= $("sell-amount").value;
-    updateDisplay(document.selectedStock);
-
-    //Reset order inputs
-    $("sell-amount").value = 0;
-    $("sell-unit").value = 0;
-    updateTotal("sell");
 }

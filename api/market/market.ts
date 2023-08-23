@@ -187,6 +187,13 @@ export default class Market {
             if (searchedList[x].ouid === order.ouid) {
 
                 searchedList.splice(x, 1);
+
+                //Broadcast cancelation
+                this.websock.broadcastAll({
+                    stock: stock,
+                    cancel: order.ouid
+                });
+    
                 return true;
             }
         }
@@ -239,6 +246,10 @@ export default class Market {
         }
     }
 
+    getStocks() {
+        return this.stockList;
+    }
+
     save(defaultMarketPath: string = "./market.json"): boolean {
 
         try {
@@ -280,8 +291,6 @@ export default class Market {
             //Safety check, so TS does not go crazy
             if (buy === undefined || sell === undefined)
                 break;
-
-            //TODO: self-order check (so that sell and buy order from the same user wouldn't be matched)
 
             //Check, if the order could be made
             if ((buy.totalPrice / buy.units) >= (sell.totalPrice / sell.units)) {
@@ -360,6 +369,10 @@ export default class Market {
             outputOrder: outputOrder 
         };
 
+        //TODO: debug
+        console.log(`[${new Date().toLocaleTimeString("sk-SK")}]: transaction - buy order: ${buy.ouid}, sell order: ${sell.ouid} (asset: ${stockName}, sold: ${assetSold}, paid: ${cashPaid}, unit price: ${buy.totalPrice / buy.units})`)
+        if (outputOrder !== null) console.log(`[${new Date().toLocaleTimeString("sk-SK")}]: transaction - output order: (price: ${outputOrder?.totalPrice}, amount: ${outputOrder?.units}, unit price: ${outputOrder?.totalPrice / outputOrder?.units})`);
+
 
         //Settle assets
         const sellingUser = this.users.getUserByID(sell.cuid);
@@ -413,7 +426,6 @@ export default class Market {
         return transaction;
     }
 
-    
     private users: Users;
     private stockList: Map<string, stock>;
     private websock: WSServer;

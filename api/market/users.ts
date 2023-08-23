@@ -19,6 +19,7 @@ export interface User {
     usid: string;   //User UUID
 
     merchant: boolean; //Is merchant? (veduci)
+    bot: boolean;
 
     ws?: WebSocket; //WebSocket Connection
     portfolio?: portfolio;
@@ -65,48 +66,29 @@ export default class Users {
 
             //Register new user
 
-            for (const user of this.userList) {
-                if (user.name === msg.name)
-                    return res.status(409).send("409: user already exists");
+            try {
+
+                const user = await this.createUser(msg.name, msg.passwd);
+
+                //Create cookies
+                const tradeCookie = sign({
+                    type: 'trade',
+                    nonce: user.uniqueToken,
+                    uid: user.usid
+                }, this.appKey, { expiresIn: '24h'});
+
+                res.cookie("tradeBiscuit", tradeCookie, {
+                    maxAge: 12 * 60 * 60 * 1000,
+                    httpOnly: true,
+                    sameSite: true
+                });
+
+                return res.status(200).send("200: ok");
+
+            } catch (err: any) {
+
+                return res.status(400).send(`400: ${err.message}`);
             }
-
-            //Calculate password hash
-            const passhash  = await argon2.hash(msg.passwd);
-            const usid      = randomUUID();
-            const uniqueToken = randomBytes(8).toString("base64");
-
-            const newUser: User = {
-                name: msg.name,
-                pass: passhash,
-                usid: usid,
-                uniqueToken: uniqueToken,
-                merchant: false,
-                portfolio: {
-                    assets: {
-                        BTC: 30
-                    },
-                    cash: 200
-                }
-            };
-
-            this.userList.push(newUser);
-
-
-            //Create cookies
-            const tradeCookie = sign({
-                type: 'trade',
-                nonce: uniqueToken,
-                uid: usid
-            }, this.appKey, { expiresIn: '24h'});
-
-            res.cookie("tradeBiscuit", tradeCookie, {
-                maxAge: 12 * 60 * 60 * 1000,
-                httpOnly: true,
-                sameSite: true
-            });
-
-            return res.status(200).send("200: ok");
-
         }
         else if (msg.type === "login") {
 
@@ -118,9 +100,11 @@ export default class Users {
                 if (user.name === msg.name) {
                     if (await argon2.verify(user.pass, msg.passwd)) { //Done this way so we potentialy don't calculate hash on every single user's passwd
 
+                        if(user.bot)
+                            return res.status(400).send("400: Not Human");
 
                         //You can only become a merchant after you register, so there is no need to overcomplicate things
-                        if (user.merchant === true) {
+                        if (user.merchant) {
 
                             user.uniqueToken = randomBytes(8).toString("base64");
 
@@ -255,7 +239,7 @@ export default class Users {
 
         try {
 
-            const userJSON = JSON.stringify(this.userList, ["name", "pass", "usid", "merchant", "portfolio"]); //Skip saving the whole WebSocket Object
+            const userJSON = JSON.stringify(this.userList, ["name", "pass", "usid", "merchant", "portfolio", "bot"]); //Skip saving the whole WebSocket Object
             writeFileSync(defaultUsersPath, userJSON, {encoding:'utf-8'});
             return true;
 
@@ -278,6 +262,35 @@ export default class Users {
         }
 
         return undefined;
+    }
+
+    async createUser(username: string, passwd: string) {
+
+        for (const user of this.userList) {
+            if (user.name === username)
+                throw new Error("409: user already exists");
+        }
+
+        //Calculate password hash
+        const passhash  = await argon2.hash(passwd);
+        const usid      = randomUUID();
+        const uniqueToken = randomBytes(8).toString("base64");
+
+        const newUser: User = {
+            name: username,
+            pass: passhash,
+            usid: usid,
+            uniqueToken: uniqueToken,
+            merchant: false,
+            bot: false,
+            portfolio: {
+                assets: {},
+                cash: 0
+            }
+        };
+
+        this.userList.push(newUser);
+        return newUser;
     }
 
     private userList: User[];

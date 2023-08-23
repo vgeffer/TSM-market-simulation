@@ -43,6 +43,10 @@ p {
     font-size: 0.75rem;
 }
 
+li {
+    display: inline;
+}
+
 /*Classes*/
 .error {
     display: block;

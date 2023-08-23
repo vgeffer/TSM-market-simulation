@@ -21,7 +21,6 @@
                 </div>
 
                 <div>
-                    <button id = "profile">Profile</button>
                     <button id = "logout">Log out</button>
                 </div>
             </nav>
@@ -86,10 +85,16 @@
                     </div>
                 
                     <div class = "row">
-                        <div>
-                            <div id = "buy-orders"></div>
-                            <div id = "sell-orders"></div>
+                        <div class = "stock-info-responsive">
+                            <h3>Active Buy Orders: </h3>
+                            <div id = "buy-orders" class = "orderinfo-responsive"></div>
                         </div>
+
+                        <div class = "stock-info-responsive">
+                            <h3>Active Sell Orders: </h3>
+                            <div id = "sell-orders" class = "orderinfo-responsive"></div>
+                        </div>
+
                     </div>
                 </section>
 

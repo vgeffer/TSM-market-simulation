@@ -11,12 +11,20 @@ import cookieParser from "cookie-parser";
 import WSServer from "./api/websockets";
 import Users from "./api/market/users";
 import Market from "./api/market/market";
+
+//Admin
+import AdminConsole from "./api/admin/simulation";
+
 //Endpoints
 import TradeEndpoints from "./api/endpoint/trade";
 import MerchantEndpoints from "./api/endpoint/merchant";
+import TradeBot, { botSettings } from "./api/admin/trade-bot";
 
 
 (async function() {
+
+    console.log();
+
     //Setup server
     const app = express();
     const router = Router();
@@ -54,7 +62,7 @@ import MerchantEndpoints from "./api/endpoint/merchant";
 
     //Create instance of endpoint superclasses
     const trade = new TradeEndpoints(market, users, websock);
-    const merchant = new MerchantEndpoints(users, process.env.APP_SECRET);
+    const merchant = new MerchantEndpoints(users, websock, process.env.APP_SECRET);
 
     //Setup endpoints
     router.post("/secure/auth",
@@ -87,14 +95,11 @@ import MerchantEndpoints from "./api/endpoint/merchant";
     router.get("/merchant/secure/logout",
         async (req, res) => { merchant.logout(req, res); }
     );
-    router.put("/merchant/secure/purchase/:uid/:item/:target",
+    router.put("/merchant/secure/purchase/:uid/:item",
         async (req, res) => { merchant.buy(req, res); }
     );
     router.put("/merchant/secure/income/:uid/:amount", 
         async (req, res) => { merchant.writeIncome(req, res); }
-    );
-    router.get("/merchant/secure/user/:uid",
-        async (req, res) => { merchant.getUser(req, res); }
     );
     router.get("/merchant/secure/users", 
         async (req, res) => { merchant.getAllUsers(req, res); }
@@ -106,10 +111,11 @@ import MerchantEndpoints from "./api/endpoint/merchant";
 
 
     //Setup admin endpoints
+    const adminConsole = new AdminConsole(market, users, "./test.sock");
 
 
     //TODO: delete debug
-    setInterval(() => { market.tick() }, 1000);    
+    console.log(`[${new Date().toLocaleTimeString("sk-SK")}]: Starting new logging session`);
 
     //Setup event handlers
     process.on('exit', () => {

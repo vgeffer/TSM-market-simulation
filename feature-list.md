@@ -5,7 +5,7 @@
     [x] WS auth
     [x] Logout
     [x] Single device 
-    [-] Frontend
+    [X] Frontend
 
 [x] Trading
     [x] Create order
@@ -14,22 +14,16 @@
     [x] Match orders 
     [x] Graphs
     [x] Portfolios
-    [-] Frontend
+    [X] Frontend
 
-[-] Merchant
-    [-] Shops
+[X] Merchant
+    [X] Shops
     [x] Info messages
-    [-] Messages
     [x] Merchant accounts
-    [-] Frontend
+    [X] Frontend
 
-[ ] Admin
-    [-] Sim settings
-    [-] Sim start/stop
-    [ ] User management
-    [ ] Bots
-
-
-TODAY TODOS: 
-    - messages
-    - shop backends
+[X] Admin
+    [X] Sim settings
+    [X] Sim start/stop
+    [X] User management
+    [X] Bots
