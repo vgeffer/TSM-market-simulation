@@ -152,11 +152,11 @@ function processOrder(stock, order) {
 
     
     document.market[stock].activeBuyOrders.sort((a, b) => { //Wants to buy for the most (lowest to highest)
-        return (a.totalPrice / a.units) - (b.totalPrice / b.units);
+        return (b.totalPrice / b.units) - (a.totalPrice / a.units);
     });
             
     document.market[stock].activeSellOrders.sort((a, b) => { //Wants to sell for the least (highest to lowest)
-        return (b.totalPrice / b.units) - (a.totalPrice / a.units);
+        return (a.totalPrice / a.units) - (b.totalPrice / b.units);
     });
 
     updateDisplay(stock, ["orders", "order-prices"]);

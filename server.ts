@@ -108,14 +108,10 @@ import TradeBot, { botSettings } from "./api/admin/trade-bot";
         async (req, res) => { merchant.getTradables(req, res); }
     );
 
-
-
     //Setup admin endpoints
-    const adminConsole = new AdminConsole(market, users, "./test.sock");
+    const socketPath = typeof process.env.SOCKET_PATH === "undefined" ? "control.sock" : process.env.SOCKET_PATH;
 
-
-    //TODO: delete debug
-    console.log(`[${new Date().toLocaleTimeString("sk-SK")}]: Starting new logging session`);
+    const adminConsole = new AdminConsole(market, users, socketPath);
 
     //Setup event handlers
     process.on('exit', () => {
