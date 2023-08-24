@@ -118,11 +118,9 @@ export default class TradeBot {
             //Cancel stale order(s)
             for (let x = 0; x < this.savedOrders[affectedStock[0]].length; x++) {
 
-                const staleOrder = this.savedOrders[affectedStock[0]][0];
-
-                //TODO: fix
-                console.log(Date.now() - staleOrder.creationDate);
-                if (Date.now() - staleOrder.creationDate > 2 * 60 * 1000 || (staleOrder.unitPrice < .66 * currentPrice || staleOrder.unitPrice > 1.33 * currentPrice)) {
+                const staleOrder = this.savedOrders[affectedStock[0]][x];
+                
+                if ((new Date().getTime() - staleOrder.creationDate.getTime()) / 1000 > 2 * 60 || (staleOrder.unitPrice < .66 * currentPrice || staleOrder.unitPrice > 1.33 * currentPrice)) {
                     
                     //Get order details
                     const order = this.market.getOrderByID(affectedStock[0], staleOrder.oid);
@@ -139,7 +137,7 @@ export default class TradeBot {
                     //Remove from saved
                     this.savedOrders[affectedStock[0]].splice(x, 1);
 
-                    console.log(`[${new Date().toLocaleTimeString("sk-SK")}]: Bot ${this.user.name} - removing stale order ${staleOrder.ouid}`);
+                    console.log(`[${new Date().toLocaleTimeString("sk-SK")}]: Bot ${this.user.name} - removing stale order ${staleOrder.oid}`);
                 }
             }
 
@@ -218,7 +216,7 @@ export default class TradeBot {
                 this.user.portfolio.cash -= Math.floor(order.amount * order.unitPrice);
 
             this.savedOrders[affectedStock[0]].push({
-                creationDate: Date.now(),
+                creationDate: new Date(),
                 unitPrice: order.unitPrice,
                 oid: oid
             });
@@ -236,7 +234,7 @@ export default class TradeBot {
                 this.user.portfolio.cash -= Math.floor(amount * currentPrice);
 
                 this.savedOrders[affectedStock[0]].push({
-                    creationDate: Date.now(),
+                    creationDate: new Date(),
                     unitPrice: order.unitPrice,
                     oid: oid
                 });
@@ -256,7 +254,7 @@ export default class TradeBot {
 
 
                 this.savedOrders[affectedStock[0]].push({
-                    creationDate: Date.now(),
+                    creationDate: new Date(),
                     unitPrice: order.unitPrice,
                     oid: oid
                 });
@@ -283,7 +281,7 @@ export default class TradeBot {
   
 
                 this.savedOrders[affectedStock[0]].push({
-                    creationDate: Date.now(),
+                    creationDate: new Date(),
                     unitPrice: order.unitPrice,
                     oid: oid
                 });
@@ -305,7 +303,7 @@ export default class TradeBot {
                 
 
                 this.savedOrders[affectedStock[0]].push({
-                    creationDate: Date.now(),
+                    creationDate: new Date(),
                     unitPrice: order.unitPrice,
                     oid: oid
                 });

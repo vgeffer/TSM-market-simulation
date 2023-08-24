@@ -33,7 +33,7 @@
 }
 
 
-@media only screen and (min-width: 768px) { 
+@media only screen and (min-width: 970px) { 
 
     .col-1 { width: 10%;  }
     .col-2 { width: 50%; }

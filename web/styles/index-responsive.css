@@ -35,6 +35,15 @@
     float: left;
 }
 
+.layout-responsive {
+    display:flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+
+    margin-left: 3vw;
+    margin-right: 3vw;
+}
+
 
 /*If any smaller, we assume mobile*/
 @media only screen and (min-width: 768px) {
@@ -51,7 +60,8 @@
     }
 
     .layout-responsive {
-
+        flex-direction: column;
+        justify-content: center;
     }
 
     .padding-responsive {

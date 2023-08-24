@@ -47,6 +47,14 @@ li {
     display: inline;
 }
 
+nav {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1vh;
+}
+
 /*Classes*/
 .error {
     display: block;
@@ -129,4 +137,6 @@ li {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    margin-left: 1vw;
+    margin-right: 3vw;
 }

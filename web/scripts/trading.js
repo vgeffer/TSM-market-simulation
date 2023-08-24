@@ -384,6 +384,9 @@ function updateDisplay(stock, delta) {
         switch (update) {
             case "orders": 
 
+                $("buy-title").textContent = `Active Buy Orders (${document.market[stock].activeBuyOrders.length}): `;
+                $("sell-title").textContent = `Active Sell Orders (${document.market[stock].activeSellOrders.length}): `;
+
                 //Remove all children
                 $("buy-orders").replaceChildren();
                 $("sell-orders").replaceChildren();
