@@ -203,6 +203,8 @@ export default class Market {
 
     getOrderByID(stock: string, oid: string): order | undefined {
 
+        console.log(stock, oid);
+
         const stockData = this.stockList.get(stock);
         if (typeof stockData === "undefined")
             return undefined;
@@ -368,11 +370,6 @@ export default class Market {
             buyOID: buy.ouid,
             outputOrder: outputOrder 
         };
-
-        //TODO: debug
-        console.log(`[${new Date().toLocaleTimeString("sk-SK")}]: transaction - buy order: ${buy.ouid}, sell order: ${sell.ouid} (asset: ${stockName}, sold: ${assetSold}, paid: ${cashPaid}, unit price: ${buy.totalPrice / buy.units})`)
-        if (outputOrder !== null) console.log(`[${new Date().toLocaleTimeString("sk-SK")}]: transaction - output order: (price: ${outputOrder?.totalPrice}, amount: ${outputOrder?.units}, unit price: ${outputOrder?.totalPrice / outputOrder?.units})`);
-
 
         //Settle assets
         const sellingUser = this.users.getUserByID(sell.cuid);

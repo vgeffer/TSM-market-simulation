@@ -66,14 +66,6 @@ window.onload = async () => {
 
 function parseSocketMessage(msg) {
 
-    //TODO: debug
-    let sum = 0;
-    for (const user of document.users) {
-        if(user.bot)
-            sum += user.portfolio.cash;
-    }
-    console.log(sum-30000);
-
     switch (msg.type) {
 
         case "auth":

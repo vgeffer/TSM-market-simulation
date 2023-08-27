@@ -397,8 +397,8 @@ function updateDisplay(stock, delta) {
 
                     const orderParent = document.createElement("span");
 
-                    const orderListing = document.createElement("p"); //TODO: Debug
-                    orderListing.textContent = `Amount: ${order.units}, Unit Price: ${order.totalPrice / order.units}, OrderID: ${order.ouid}`;       
+                    const orderListing = document.createElement("p"); 
+                    orderListing.textContent = `Amount: ${order.units}, Unit Price: ${order.totalPrice / order.units}`;       
                     orderParent.appendChild(orderListing);
 
                     if (document.userID === order.cuid) {
@@ -449,7 +449,7 @@ function updateDisplay(stock, delta) {
                 
                 const graphProperties = {
                     modeBarButtonsToRemove: ["toImage", "zoom2d", "pan2d"],
-                    displaylogo: false, //TODO: ?
+                    displaylogo: false, 
                     responsive: true
                 };
 
@@ -457,7 +457,7 @@ function updateDisplay(stock, delta) {
                 for (const item in document.market[stock].priceHistory) {
                     const date = new Date(Number(item));
 
-                    x.push(date.toLocaleTimeString("sk-SK")); //TODO: Time Milis
+                    x.push(date.toLocaleTimeString("sk-SK"));
                     y.push(document.market[stock].priceHistory[item]);
                 }
 

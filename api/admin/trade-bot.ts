@@ -92,8 +92,6 @@ export default class TradeBot {
 
     private tick() {
 
-        console.log();
-
         if (this.user === null || typeof this.user.portfolio === "undefined") return;
         
         //Aggressivity - amount of actions per turn
@@ -113,7 +111,6 @@ export default class TradeBot {
             //Do an action
             const currentPrice = affectedStock[1].priceHistory[Object.keys(affectedStock[1].priceHistory)[Object.keys(affectedStock[1].priceHistory).length - 1]];
             const amount = Math.floor(Math.random() * 20) + 1;
-            console.log(`[${new Date().toLocaleTimeString("sk-SK")}]: Bot ${this.user.name} - chosen trading amount: ${amount}`);
 
             //Cancel stale order(s)
             for (let x = 0; x < this.savedOrders[affectedStock[0]].length; x++) {
@@ -122,9 +119,13 @@ export default class TradeBot {
                 
                 if ((new Date().getTime() - staleOrder.creationDate.getTime()) / 1000 > 2 * 60 || (staleOrder.unitPrice < .66 * currentPrice || staleOrder.unitPrice > 1.33 * currentPrice)) {
                     
+                    console.log(staleOrder);
+
                     //Get order details
                     const order = this.market.getOrderByID(affectedStock[0], staleOrder.oid);
                     if (typeof order === "undefined") continue;
+
+                    console.log(order);
 
                     if (order.type === orderType.BUY) 
                         this.user.portfolio.cash += order.totalPrice;
@@ -137,7 +138,6 @@ export default class TradeBot {
                     //Remove from saved
                     this.savedOrders[affectedStock[0]].splice(x, 1);
 
-                    console.log(`[${new Date().toLocaleTimeString("sk-SK")}]: Bot ${this.user.name} - removing stale order ${staleOrder.oid}`);
                 }
             }
 
@@ -198,17 +198,12 @@ export default class TradeBot {
             else 
                 order.amount = (Math.min(0.33 * this.user.portfolio.cash, Math.max(0, order.amount * order.unitPrice))) / order.unitPrice;
             
-
-            console.log(`[${new Date().toLocaleTimeString("sk-SK")}]: Bot ${this.user.name} - adjusted trading amount: ${order.amount}`);
-            //TODO: debug
             const oid = this.market.addOrder(this.user.usid, order.type, affectedStock[0], Math.floor(order.amount), Math.floor(Math.floor(order.amount) * order.unitPrice)); //Safety floors in here
 
             if (oid === null)
                 continue;
 
-            console.log(`[${new Date().toLocaleTimeString("sk-SK")}]: Bot ${this.user.name} - ${order.type === orderType.BUY ? "buy" : "sell"} offer (oid: ${oid}) on ${affectedStock[0]}: (amount: ${Math.floor(order.amount)}, unit price: ${order.unitPrice}, total price: ${Math.floor(order.amount * order.unitPrice)})`);
-
-
+            console.log(oid);
             //Lock up resources
             if (order.type === orderType.SELL) 
                this.user.portfolio.assets[affectedStock[0]] -= Math.floor(order.amount);
@@ -221,7 +216,8 @@ export default class TradeBot {
                 oid: oid
             });
 
-            //TODO: Lock up resources
+            console.log(this.savedOrders);
+
             if (this.user.portfolio.assets[affectedStock[0]] < 0.1 * this.settings.startingPortfolio.assets[affectedStock[0]]) {
                 
                 let amount = Math.floor(Math.random() * 20) + 1;
@@ -238,8 +234,6 @@ export default class TradeBot {
                     unitPrice: order.unitPrice,
                     oid: oid
                 });
-
-                console.log(`[${new Date().toLocaleTimeString("sk-SK")}]: Bot ${this.user.name} - refill  "buy" offer (oid: ${oid}) on ${affectedStock[0]}: (amount: ${amount}, unit price: ${currentPrice}, total price: ${Math.floor(amount * currentPrice)})`);
             }
             else if (this.user.portfolio.cash < 0.1 * this.settings.startingPortfolio.cash) {
             
@@ -258,10 +252,6 @@ export default class TradeBot {
                     unitPrice: order.unitPrice,
                     oid: oid
                 });
-
-
-                console.log(`[${new Date().toLocaleTimeString("sk-SK")}]: Bot ${this.user.name} - refill "sell" offer (oid: ${oid}) on ${affectedStock[0]}: (amount: ${amount}, unit price: ${currentPrice}, total price: ${Math.floor(amount * currentPrice)})`);
-
             }
 
             //Cleaning orders
@@ -285,8 +275,6 @@ export default class TradeBot {
                     unitPrice: order.unitPrice,
                     oid: oid
                 });
-
-                console.log(`[${new Date().toLocaleTimeString("sk-SK")}]: Bot ${this.user.name} - cleanup "sell" offer (oid: ${oid}) on ${affectedStock[0]}: (amount: ${amount}, unit price: ${price}, total price: ${Math.floor(amount * price)})`);
             }
 
             else if (affectedStock[1].activeSellOrders.length > 7) {
@@ -307,10 +295,6 @@ export default class TradeBot {
                     unitPrice: order.unitPrice,
                     oid: oid
                 });
-
-
-                console.log(`[${new Date().toLocaleTimeString("sk-SK")}]: Bot ${this.user.name} - refill  "buy" offer (oid: ${oid}) on ${affectedStock[0]}: (amount: ${amount}, unit price: ${price}, total price: ${Math.floor(amount * price)})`);
-
             }
         }
     }
