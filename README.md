@@ -1,6 +1,6 @@
 # TSM-market-simulation
 
-A simple trading market design. It consists of a backend written in Typescipt and frontend in HTML/Javascript.
+A simple trading market design, licenced under GNU GPL. It consists of a backend written in Typescipt and frontend in HTML/Javascript.
 
 ## TOC
 1. Features
@@ -88,3 +88,6 @@ To start the market connect to the control socket (for example ```nc -U [control
 
 ### 4. Future
 As of now, the development is paused. There will be no new features added nor any updates provides for the time being. Minor bug fixes may be rolled out occasionaly.
+
+### 5. Notice
+This software uses the [plotly.js](https://github.com/plotly/plotly.js) library. Copyright (c) 2021 Plotly, Inc
